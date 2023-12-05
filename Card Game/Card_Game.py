@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffled
 
 
 class Card:
