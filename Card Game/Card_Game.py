@@ -1,130 +1,130 @@
-from random import shuffled
-
-
-class Card:
-    suits = ["spades",
-             "hearts",
-             "diamonds",
-             "clubs"]
-
-    values = [None, None,"2", "3",
-              "4", "5", "6", "7",
-              "8", "9", "10",
-              "Jack", "Queen",
-              "King", "Ace"]
-
-    def __init__(self, v, s):
-        """suit + value are ints"""
-        self.value = v
-        self.suit = s
-
-    def __lt__(self, c2):
-        if self.value < c2.value:
-            return True
-        if self.value == c2.value:
-            if self.suit < c2.suit:
-                return True
-            else:
-                return False
-        return False
-
-    def __gt__(self, c2):
-        if self.value > c2.value:
-            return True
-        if self.value == c2.value:
-            if self.suit > c2.suit:
-                return True
-            else:
-                return False
-        return False
-
-    def __repr__(self):
-        v = self.values[self.value] +\
-            " of " + \
-            self.suits[self.suit]
-        return v
-
-
-class Deck:
-    def __init__(self):
-        self.cards = []
-        for i in range(2, 15):
-            for j in range(4):
-                self.cards\
-                    .append(Card(i,
-                                 j))
-        shuffle(self.cards)
-
-    def rm_card(self):
-        if len(self.cards) == 0:
-            return
-        return self.cards.pop()
-
-
-class Player:
-    def __init__(self, name):
-        self.wins = 0
-        self.card = None
-        self.name = name
-
-
-class Game:
-    def __init__(self):
-        name1 = input("p1 name ")
-        name2 = input("p2 name ")
-        self.deck = Deck()
-        self.p1 = Player(name1)
-        self.p2 = Player(name2)
-
-    def wins(self, winner):
-        w = "{} wins this round"
-        w = w.format(winner)
-        print(w)
-
-    def draw(self, p1n, p1c, p2n, p2c):
-        d = "{} drew {} {} drew {}"
-        d = d.format(p1n,
-                     p1c,
-                     p2n,
-                     p2c)
-        print(d)
-
-    def play_game(self):
-        cards = self.deck.cards
-        print("beginning War!")
-        while len(cards) >= 2:
-            m = "q to quit. Any " + \
-                "key to play:"
-            response = input(m)
-            if response == 'q':
-                break
-            p1c = self.deck.rm_card()
-            p2c = self.deck.rm_card()
-            p1n = self.p1.name
-            p2n = self.p2.name
-            self.draw(p1n,
-                      p1c,
-                      p2n,
-                      p2c)
-            if p1c > p2c:
-                self.p1.wins += 1
-                self.wins(self.p1.name)
-            else:
-                self.p2.wins += 1
-                self.wins(self.p2.name)
-
-        win = self.winner(self.p1,
-                         self.p2)
-        print("War is over.{} wins"
-              .format(win))
-
-    def winner(self, p1, p2):
-        if p1.wins > p2.wins:
-            return p1.name
-        if p1.wins < p2.wins:
-            return p2.name
-        return "It was a tie!"
-
-game = Game()
-game.play_game()
-
+import turtle
+import random
+ 
+w = 500
+h = 500
+food_size = 10
+delay = 100
+ 
+offsets = {
+    "up": (0, 20),
+    "down": (0, -20),
+    "left": (-20, 0),
+    "right": (20, 0)
+}
+ 
+def reset():
+    global snake, snake_dir, food_position, pen
+    snake = [[0, 0], [0, 20], [0, 40], [0, 60], [0, 80]]
+    snake_dir = "up"
+    food_position = get_random_food_position()
+    food.goto(food_position)
+    move_snake()
+     
+def move_snake():
+    global snake_dir
+ 
+    new_head = snake[-1].copy()
+    new_head[0] = snake[-1][0] + offsets[snake_dir][0]
+    new_head[1] = snake[-1][1] + offsets[snake_dir][1]
+ 
+     
+    if new_head in snake[:-1]:
+        reset()
+    else:
+        snake.append(new_head)
+ 
+     
+        if not food_collision():
+            snake.pop(0)
+ 
+ 
+        if snake[-1][0] > w / 2:
+            snake[-1][0] -= w
+        elif snake[-1][0] < - w / 2:
+            snake[-1][0] += w
+        elif snake[-1][1] > h / 2:
+            snake[-1][1] -= h
+        elif snake[-1][1] < -h / 2:
+            snake[-1][1] += h
+ 
+ 
+        pen.clearstamps()
+ 
+         
+        for segment in snake:
+            pen.goto(segment[0], segment[1])
+            pen.stamp()
+ 
+         
+        screen.update()
+ 
+        turtle.ontimer(move_snake, delay)
+ 
+def food_collision():
+    global food_position
+    if get_distance(snake[-1], food_position) < 20:
+        food_position = get_random_food_position()
+        food.goto(food_position)
+        return True
+    return False
+ 
+def get_random_food_position():
+    x = random.randint(- w / 2 + food_size, w / 2 - food_size)
+    y = random.randint(- h / 2 + food_size, h / 2 - food_size)
+    return (x, y)
+ 
+def get_distance(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+    distance = ((y2 - y1) ** 2 + (x2 - x1) ** 2) ** 0.5
+    return distance
+def go_up():
+    global snake_dir
+    if snake_dir != "down":
+        snake_dir = "up"
+ 
+def go_right():
+    global snake_dir
+    if snake_dir != "left":
+        snake_dir = "right"
+ 
+def go_down():
+    global snake_dir
+    if snake_dir!= "up":
+        snake_dir = "down"
+ 
+def go_left():
+    global snake_dir
+    if snake_dir != "right":
+        snake_dir = "left"
+ 
+ 
+screen = turtle.Screen()
+screen.setup(w, h)
+screen.title("Snake")
+screen.bgcolor("blue")
+screen.setup(500, 500)
+screen.tracer(0)
+ 
+ 
+pen = turtle.Turtle("square")
+pen.penup()
+ 
+ 
+food = turtle.Turtle()
+food.shape("square")
+food.color("yellow")
+food.shapesize(food_size / 20)
+food.penup()
+ 
+ 
+screen.listen()
+screen.onkey(go_up, "Up")
+screen.onkey(go_right, "Right")
+screen.onkey(go_down, "Down")
+screen.onkey(go_left, "Left")
+ 
+ 
+reset()
+turtle.done()
